@@ -4,3 +4,4 @@ auth/*
 \#*\#
 *.session
 etags/*
+cache/*
