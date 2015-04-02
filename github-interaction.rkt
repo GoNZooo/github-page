@@ -41,15 +41,16 @@
 				  `(,(format "Authorization: token ~a"
 							 (auth-token-value)))))
 
-(struct user (name location url)
+(struct user (name location html-url)
 		#:transparent)
 
 (define (json/user->user json-data)
   (define name (hash-ref json-data 'name))
   (define location (hash-ref json-data 'location))
-  (define url (hash-ref json-data 'url))
-  (user name location url))
+  (define html-url (hash-ref json-data 'html_url))
+  (user name location html-url))
+
+;(struct repo (name ))
 
 (module+ main
-  (json/user->user (fetch/user))
-  (length (fetch/repos)))
+  (car (fetch/repos)))
