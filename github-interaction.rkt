@@ -31,6 +31,13 @@
 										port->string)
 				  "\n" ""))
 
+(define/contract (etag/read type)
+  (string? . -> . string?)
+  
+  (call-with-input-file (format "etags/~a.etag"
+								type)
+						port->string))
+
 (define/contract (api/user [token (auth-token-value)])
   (() (string?) . ->* . (or/c jsexpr? eof-object?))
   
