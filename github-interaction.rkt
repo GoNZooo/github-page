@@ -12,12 +12,6 @@
 		 api/user->user
 		 api/repos->repos)
 
-(define github-base-url "https://api.github.com/")
-(define github-user-url (string-append github-base-url
-									   "user"))
-(define github-repos-url (string-append github-user-url
-										"/repos"))
-
 (define/contract (auth-token-loc)
   (-> string?)
   
@@ -55,6 +49,15 @@
 	[(list a ... (list "ETag" etag-value) b ...) etag-value]
 	[else ""]))
 
+
+(define/contract (not-modified? headers)
+  ((listof (listof string?)) . -> . boolean?)
+
+  (ormap (lambda (field)
+		   (begin
+			 (equal? field '("Status" "304 Not Modified"))))
+		 headers))
+
 (define/contract (read-cache type)
   (string? . -> . jsexpr?)
   
@@ -71,65 +74,47 @@
 						   (write data out-port))
 						 #:exists 'replace))
 
-(define/contract (api/user [token (auth-token-value)])
-  (() (string?) . ->* . (or/c jsexpr? eof-object?))
+(define (header-string->header-list header-string)
+  (map (lambda (field)
+		 (string-split field ": "))
+	   (string-split header-string "\r\n")))
 
-  (define request-fields (list (format "Authorization: token ~a"
-									   (auth-token-value))
-							   (format "If-None-Match: ~a"
-									   (read-etag "user"))))
+(define/contract (api/fetch type [cache? #t])
+  ((string?) (boolean?) . ->* . jsexpr?)
+
+  (define (api-url)
+	(define github-base-url "https://api.github.com/")
+	(case type
+	  [("user") (string-append github-base-url
+							   "user")]
+	  [("repos") (string-append github-base-url
+								"user/repos")]))
 
   (define-values (api-port header-string)
-	(get-pure-port/headers (string->url github-user-url)
-						   request-fields))
+	(get-pure-port/headers (string->url (api-url))
+						   (list (format "Authorization: token ~a"
+										 (auth-token-value))
+								 (format "If-None-Match: ~a"
+										 (read-etag type)))))
+  (define header (header-string->header-list header-string))
 
-  (define headers (map (lambda (field)
-						 (string-split field ": "))
-					   (string-split header-string "\r\n")))
-
-  (define etag (extract-etag headers))
-
-  (if (not-modified? headers)
-	(read-cache "user")
+  (if (and (not-modified? header) cache?)
+	(read-cache type)
 	(let ([js-data (read-json api-port)])
 	  (close-input-port api-port)
-	  (write-cache "user" js-data)
-	  (write-etag "user" etag)
+	  (write-cache type js-data)
+	  (write-etag type (extract-etag header))
 	  js-data)))
 
-(define/contract (not-modified? headers)
-  ((listof (listof string?)) . -> . boolean?)
+(define/contract (api/user [token (auth-token-value)] [cache? #t])
+  (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
 
-  (ormap (lambda (field)
-		   (begin
-			 (equal? field '("Status" "304 Not Modified"))))
-		 headers))
+  (api/fetch "user" cache?))
 
-(define/contract (api/repos [token (auth-token-value)])
-  (() (string?) . ->* . (or/c jsexpr? eof-object?))
+(define/contract (api/repos [token (auth-token-value)] [cache? #t])
+  (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
 
-
-  (define request-fields (list (format "Authorization: token ~a"
-									   (auth-token-value))
-							   (format "If-None-Match: ~a"
-									   (read-etag "repos"))))
-
-  (define-values (api-port header-string)
-	(get-pure-port/headers (string->url github-repos-url)
-						   request-fields))
-
-  (define headers (map (lambda (field)
-						 (string-split field ": "))
-					   (string-split header-string "\r\n")))
-
-  (define etag (extract-etag headers))
-
-  (if (not-modified? headers)
-	(read-cache "repos")
-	(let ([js-data (read-json api-port)])
-	  (write-cache "repos" js-data)
-	  (write-etag "repos" etag)
-	  js-data)))
+  (api/fetch "repos" cache?))
 
 (struct user (name location html-url)
 		#:transparent)
