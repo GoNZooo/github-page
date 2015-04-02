@@ -50,7 +50,19 @@
   (define html-url (hash-ref json-data 'html_url))
   (user name location html-url))
 
-;(struct repo (name ))
+(struct repo (name description html-url language)
+		#:transparent)
+
+(define (json/repo->repo json-data)
+  (define name (hash-ref json-data 'name))
+  (define description (hash-ref json-data 'description))
+  (define html-url (hash-ref json-data 'html_url))
+  (define language (hash-ref json-data 'language))
+  (repo name description html-url language))
+
+(define (json/repos->repos json-data)
+  (map json/repo->repo json-data))
 
 (module+ main
-  (car (fetch/repos)))
+  (json/user->user (fetch/user))
+  (json/repos->repos (fetch/repos)))
