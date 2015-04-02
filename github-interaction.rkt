@@ -3,6 +3,7 @@
 (require racket/port
 		 racket/string
 		 racket/contract
+		 racket/match
 		 json
 		 net/url)
 
@@ -39,6 +40,16 @@
 				  read-json
 				  `(,(format "Authorization: token ~a"
 							 (auth-token-value)))))
+
+(struct user (name location url)
+		#:transparent)
+
+(define (json/user->user json-data)
+  (define name (hash-ref json-data 'name))
+  (define location (hash-ref json-data 'location))
+  (define url (hash-ref json-data 'url))
+  (user name location url))
+
 (module+ main
-  (fetch/user)
+  (json/user->user (fetch/user))
   (length (fetch/repos)))
