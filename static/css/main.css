@@ -1,10 +1,12 @@
 body {
 	background-color: #ddd;
 	color: #262;
+	font-family: "Open Sans", sans-serif;
 }
 
 div#user-info {
 	margin-bottom: 1%;
+	font-weight: 400;
 }
 
 #user-info div {
@@ -25,7 +27,7 @@ span#github-link {
 div#repo-list {
 	margin-left: 1%;
 	padding-left: 10px;
-	font-family: Verdana;
+	font-weight: 600;
 }
 
 table#repo-table {
@@ -34,7 +36,7 @@ table#repo-table {
 
 table, th, td {
 	border: 1px solid #111;
-	font-size: 14px;
+	font-size: 18px;
 }
 
 tr.odd {
@@ -50,7 +52,6 @@ td.repo-name{
 }
 
 td.repo-description {
-	font-size: 16px;
 }
 
 td.repo-language {
