@@ -1,0 +1,70 @@
+body {
+	background-color: #ddd;
+	color: #585;
+}
+
+div#user-info {
+	margin-bottom: 1%;
+}
+
+div#user-name {
+	font-size: 22px;
+}
+
+span.user-field {
+	margin-right: 1%;
+}
+
+span.user-value {
+	margin-left: 1%;
+}
+
+span#mailto-link {
+	margin-left: 1%;
+}
+
+span#github-link {
+	margin-left: 1%;
+}
+
+div#repo-list {
+	margin-left: 1%;
+	padding-left: 10px;
+}
+
+table#repo-list {
+	border-collapse: collapse;
+}
+
+table, th, td {
+	border: 1px solid #111;
+	font-size: 14px;
+}
+
+tr.odd {
+	background-color: #eee;
+}
+
+tr.even {
+	background-color: #fff;
+}
+
+td.repo-name{
+	text-align: center;
+}
+
+td.repo-description {
+	font-size: 16px;
+}
+
+td.repo-language {
+	text-align: center;
+}
+
+td {
+	padding: 6px 6px 6px 6px;
+}
+
+a {
+	color: #339;
+}

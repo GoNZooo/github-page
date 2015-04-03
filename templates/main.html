@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>GoNZooo@"@"GitHub</title>
+		<link rel="stylesheet" href="css/main.css" type="text/css">
+	</head>
+	<body>
+		<div id="user-info">
+			<div id="user-name">
+				<span class="user-value">@|(user-name user-data)|</span>
+			</div>
+			<div id="user-location">
+				<span class="user-value">@|(user-location user-data)|</span>
+			</div>
+			<div id="user-links">
+				<span id="mailto-link"><a href="mailto:@|(email-adress email-data)|">E-mail</a></span>
+				<span id="github-link"><a href="@|(user-html-url user-data)|">GitHub profile</a></span>
+			</div>
+		</div>
+		<div id="repo-list">
+			<table id="repo-list">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Language</th>
+					</tr>
+				</thead>
+				@in[r repo-list]{
+				@(if (odd? (car r))
+				"<tr class=\"odd\">" "<tr class=\"even\">")
+						<td class="repo-name">
+							<a href="@|(repo-html-url (cdr r))|">@|(repo-name (cdr r))|</a>
+						</td>
+						<td class="repo-description">
+							@|(repo-description (cdr r))|
+						</td>
+						<td class="repo-language">
+							@|(repo-language (cdr r))|
+						</td>
+					</tr>
+					}
+			</table>
+		</div>
+	</body>
+</html>

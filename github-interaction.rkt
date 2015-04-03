@@ -4,13 +4,16 @@
 		 racket/string
 		 racket/contract
 		 racket/match
+		 racket/list
 		 json
 		 net/url)
 
 (provide (struct-out user)
 		 (struct-out repo)
+		 (struct-out email)
 		 api/user->user
-		 api/repos->repos)
+		 api/repos->repos
+		 api/email->email)
 
 (define/contract (auth-token-loc)
   (-> string?)
@@ -88,7 +91,9 @@
 	  [("user") (string-append github-base-url
 							   "user")]
 	  [("repos") (string-append github-base-url
-								"user/repos")]))
+								"user/repos")]
+	  [("email") (string-append github-base-url
+								"user/emails")]))
 
   (define-values (api-port header-string)
 	(get-pure-port/headers (string->url (api-url))
@@ -116,6 +121,11 @@
 
   (api/fetch "repos" cache?))
 
+(define/contract (api/email [token (auth-token-value)] [cache? #t])
+  (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
+  
+  (api/fetch "email" cache?))
+
 (struct user (name location html-url)
 		#:transparent)
 
@@ -137,14 +147,30 @@
   (define description (hash-ref json-data 'description))
   (define html-url (hash-ref json-data 'html_url))
   (define language (hash-ref json-data 'language))
+
   (repo name description html-url language))
 
 (define/contract (api/repos->repos [json-data (api/repos)])
-  (() ((listof jsexpr?)) . ->* . (listof repo?))
+  (() ((listof jsexpr?)) . ->* . (listof (cons/c integer? repo?)))
+
+  (map (lambda (repo num)
+		 (cons num (api/repo->repo repo)))
+	   json-data
+	   (range (length json-data))))
+
+(struct email (adress)
+		#:transparent)
+
+(define/contract (api/email->email [json-data (api/email)])
+  (() ((listof jsexpr?)) . ->* . (or/c email? boolean?))
   
-  (map api/repo->repo json-data))
+  (match json-data
+	[(list a ... (hash-table ('primary #t) ('email adress) ('verified #t)) b ...)
+	 (email adress)]
+	[else #f]))
 
 (module+ main
   (require racket/pretty)
   (api/user->user)
-  (pretty-print (api/repos->repos)))
+  (pretty-print (api/repos->repos))
+  (api/email->email))
