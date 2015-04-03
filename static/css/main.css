@@ -1,11 +1,11 @@
 body {
 	background-color: #ddd;
 	color: #262;
+	font-family: Impact, Charcoal, sans-serif;
 }
 
 div#user-info {
 	margin-bottom: 1%;
-	font-family: Impact, Charcoal, sans-serif;
 }
 
 div#user-name {
