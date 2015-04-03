@@ -9,7 +9,6 @@ div#user-info {
 
 #user-info div {
 	margin-left: 1%;
-	font-family: Impact, Charcoal, sans-serif;
 }
 
 div#user-name {
@@ -26,9 +25,10 @@ span#github-link {
 div#repo-list {
 	margin-left: 1%;
 	padding-left: 10px;
+	font-family: Verdana;
 }
 
-table#repo-list {
+table#repo-table {
 	border-collapse: collapse;
 }
 
