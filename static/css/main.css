@@ -1,23 +1,19 @@
 body {
 	background-color: #ddd;
 	color: #262;
-	font-family: Impact, Charcoal, sans-serif;
 }
 
 div#user-info {
 	margin-bottom: 1%;
 }
 
+#user-info div {
+	margin-left: 1%;
+	font-family: Impact, Charcoal, sans-serif;
+}
+
 div#user-name {
 	font-size: 22px;
-}
-
-span.user-field {
-	margin-right: 1%;
-}
-
-span.user-value {
-	margin-left: 1%;
 }
 
 span#mailto-link {
