@@ -21,8 +21,19 @@
 			 (api/repos->repos)
 			 (api/email->email)))
 
+(define/page (ping-page)
+  (response/full
+	200 #"Okay"
+	(current-seconds) TEXT/HTML-MIME-TYPE
+	'()
+	`(,(string->bytes/utf-8 "Pong!"))))
+
+(define (request/ping request)
+  (ping-page request))
+
 (define-values (github-page-dispatch github-page-url)
   (dispatch-rules
+	[("ping") request/ping]
 	[("") request/github]))
 
 (serve/servlet github-page-dispatch
