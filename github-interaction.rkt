@@ -85,15 +85,22 @@
 (define/contract (api/fetch type [cache? #t])
   ((string?) (boolean?) . ->* . jsexpr?)
 
+  (define github-base-url "https://api.github.com/")
+
+  (define (get-public-events-url)
+	(format "~ausers/~a/events/public"
+			 github-base-url
+			 (hash-ref (api/user) 'login)))
+
   (define (api-url)
-	(define github-base-url "https://api.github.com/")
 	(case type
 	  [("user") (string-append github-base-url
 							   "user")]
 	  [("repos") (string-append github-base-url
 								"user/repos")]
 	  [("email") (string-append github-base-url
-								"user/emails")]))
+								"user/emails")]
+	  [("events") (get-public-events-url)]))
 
   (define-values (api-port header-string)
 	(get-pure-port/headers (string->url (api-url))
@@ -101,6 +108,7 @@
 										 (auth-token-value))
 								 (format "If-None-Match: ~a"
 										 (read-etag type)))))
+
   (define header (header-string->header-list header-string))
 
   (if (and (not-modified? header) cache?)
@@ -169,8 +177,38 @@
 	 (email adress)]
 	[else #f]))
 
+(define/contract (api/events [token (auth-token-value)] [cache? #t])
+  (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
+
+  (api/fetch "events" cache?))
+
+(struct event (actor type repo-name repo-url)
+		#:transparent)
+
+(define/contract (api/event->event json-data)
+  (jsexpr? . -> . event?)
+  
+  (define actor (hash-ref (hash-ref json-data 'actor)
+						  'login))
+
+  (define type (hash-ref json-data 'type))
+
+  (define repo-name (hash-ref (hash-ref json-data 'repo)
+							  'name))
+
+  (define repo-url (hash-ref (hash-ref json-data 'repo)
+							 'url))
+
+  (event actor type repo-name repo-url))
+
+(define/contract (api/events->events [json-data (api/events)])
+  (() ((listof jsexpr?)) . ->* . (listof event?))
+
+  (map api/event->event json-data))
+
 (module+ main
   (require racket/pretty)
   (api/user->user)
   (pretty-print (api/repos->repos))
-  (api/email->email))
+  (api/email->email)
+  (pretty-print (api/events->events)))
