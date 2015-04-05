@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require racket/port)
+(require racket/port
+		 racket/match)
 
 (provide read-etag
 		 write-etag)
@@ -20,3 +21,10 @@
 						 (lambda (out-port)
 						   (write-string etag out-port))
 						 #:exists 'replace))
+
+(define/contract (extract-etag headers)
+  ((listof (listof string?)) . -> . string?)
+
+  (match headers
+	[(list a ... (list "ETag" etag-value) b ...) etag-value]
+	[else ""]))
