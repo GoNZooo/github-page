@@ -4,6 +4,8 @@
 		 net/url
 		 json)
 
+(provide api/fetch)
+
 (define/contract (api/fetch type [cache? #t])
   ((string?) (boolean?) . ->* . jsexpr?)
 
