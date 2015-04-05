@@ -12,7 +12,7 @@ def make_file(path):
     tmp_file.close()
 
 def read_write_warn(file_name):
-    print "'" + file_name + "' not readable/writable. (Re)making."
+    print "'" + file_name + "'is not readable/writable. (Re)making."
 
 directories = ["etags", "cache"]
 file_names = ["email", "repos", "user", "events"]
@@ -25,6 +25,8 @@ if __name__ == "__main__":
     # fetching data from GitHub specific to the user.
     if not os.getenv("GITHUB_REPO_TOKEN_LOC", False):
         print "Cannot find value for environment variable 'GITHUB_REPO_TOKEN_LOC'. This should be set."
+    elif not os.access(os.getenv("GITHUB_REPO_TOKEN_LOC", False), os.R_OK):
+        print "File that 'GITHUB_REPO_TOKEN_LOC' points to is not readable."
 
     # Check that necessary directories are present
     for directory in directories:
