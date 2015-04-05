@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require net/url
+(require racket/contract
+		 net/url
 		 json)
 
 (define/contract (api/fetch type [cache? #t])
@@ -39,3 +40,11 @@
 	  (write-cache type js-data)
 	  (write-etag type (extract-etag header))
 	  js-data)))
+
+(define/contract (not-modified? headers)
+  ((listof (listof string?)) . -> . boolean?)
+
+  (ormap (lambda (field)
+		   (begin
+			 (equal? field '("Status" "304 Not Modified"))))
+		 headers))
