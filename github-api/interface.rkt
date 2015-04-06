@@ -11,7 +11,8 @@
 					   "events.rkt"))
 
 (module+ main
+  (require racket/pretty)
   (api/user->user)
   (api/email->email)
-  (api/repos->repos)
-  (api/events->events))
+  (pretty-print (api/repos->repos))
+  (pretty-print (api/events->events)))
