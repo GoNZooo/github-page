@@ -6,7 +6,7 @@
 		 web-server/dispatch
 		 web-server/page
 		 
-		 "github-interaction.rkt")
+		 "github/interface.rkt")
 
 (define/page (main-page user-data repo-list email-data)
   (response/full
