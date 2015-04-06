@@ -1,12 +1,30 @@
 #lang racket/base
 
 (require racket/contract
+		 json
+
+		 "token.rkt"
+		 "user.rkt"
 		 "fetcher.rkt")
+
+(provide api/events->events
+		 (struct-out event))
+
+(struct event (actor type repo-name repo-url)
+		#:transparent)
+
+(define (get-public-events-url)
+  (format "~ausers/~a/events/public"
+		  github-base-url
+		  (user-login (api/user->user))))
 
 (define/contract (api/events [token (auth-token-value)] [cache? #t])
   (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
 
-  (api/fetch "events" cache?))
+  (api/fetch "events"
+			 token
+			 #:cache? cache?
+			 #:url (get-public-events-url)))
 
 (define/contract (api/event->event json-data)
   (jsexpr? . -> . event?)
@@ -23,3 +41,9 @@
 							 'url))
 
   (event actor type repo-name repo-url))
+
+(define/contract (api/events->events [json-data (api/events)]
+									 #:cache? [cache? #t])
+  (() ((listof jsexpr?) #:cache? boolean?) . ->* . (listof event?))
+  
+  (map api/event->event json-data))

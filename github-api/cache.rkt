@@ -1,7 +1,11 @@
 #lang racket/base
 
 (require racket/port
-		 racket/contract)
+		 racket/contract
+		 json)
+
+(provide read-cache
+		 write-cache)
 
 (define/contract (read-cache type)
   (string? . -> . jsexpr?)

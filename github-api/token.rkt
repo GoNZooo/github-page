@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require racket/port
-		 racket/string)
+		 racket/string
+		 racket/contract)
 
 (provide auth-token-value)
 

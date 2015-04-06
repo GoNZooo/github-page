@@ -1,7 +1,9 @@
 #lang racket/base
 
 (require racket/contract
+		 racket/list
 		 json
+
 		 "token.rkt"
 		 "fetcher.rkt")
 
@@ -14,7 +16,7 @@
 (define/contract (api/repos [token (auth-token-value)] [cache? #t])
   (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
 
-  (api/fetch "repos" cache?))
+  (api/fetch "repos" token #:cache? cache?))
 
 (define/contract (api/repo->repo json-data)
   (() (jsexpr?) . ->* . repo?)

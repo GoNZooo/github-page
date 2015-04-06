@@ -1,35 +1,41 @@
 #lang racket/base
 
 (require racket/contract
+		 racket/string
 		 net/url
-		 json)
+		 json
 
-(provide api/fetch)
+		 "etags.rkt"
+		 "cache.rkt")
 
-(define/contract (api/fetch type [cache? #t])
-  ((string?) (boolean?) . ->* . jsexpr?)
+(provide api/fetch
+		 github-base-url)
 
-  (define github-base-url "https://api.github.com/")
+(define github-base-url "https://api.github.com/")
 
-  (define (get-public-events-url)
-	(format "~ausers/~a/events/public"
-			github-base-url
-			(hash-ref (api/user) 'login)))
+(define/contract (api/fetch type
+							auth-token
+							#:cache? [cache? #t]
+							#:url [request-url ""])
+  ((string? string?) (#:cache? boolean? #:url string?) . ->* . jsexpr?)
+
+
 
   (define (api-url)
-	(case type
-	  [("user") (string-append github-base-url
-							   "user")]
-	  [("repos") (string-append github-base-url
-								"user/repos")]
-	  [("email") (string-append github-base-url
-								"user/emails")]
-	  [("events") (get-public-events-url)]))
+	(if (not (equal? request-url ""))
+	  request-url
+	  (case type
+		[("user") (string-append github-base-url
+								 "user")]
+		[("repos") (string-append github-base-url
+								  "user/repos")]
+		[("email") (string-append github-base-url
+								  "user/emails")])))
 
   (define-values (api-port header-string)
 	(get-pure-port/headers (string->url (api-url))
 						   (list (format "Authorization: token ~a"
-										 (auth-token-value))
+										 auth-token)
 								 (format "If-None-Match: ~a"
 										 (read-etag type)))))
 
@@ -50,3 +56,8 @@
 		   (begin
 			 (equal? field '("Status" "304 Not Modified"))))
 		 headers))
+
+(define (header-string->header-list header-string)
+  (map (lambda (field)
+		 (string-split field ": "))
+	   (string-split header-string "\r\n")))

@@ -1,10 +1,12 @@
 #lang racket/base
 
 (require racket/port
-		 racket/match)
+		 racket/match
+		 racket/contract)
 
 (provide read-etag
-		 write-etag)
+		 write-etag
+		 extract-etag)
 
 (define/contract (read-etag type)
   (string? . -> . string?)

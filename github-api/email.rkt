@@ -1,7 +1,9 @@
 #lang racket/base
 
 (require racket/contract
+		 racket/match
 		 json
+
 		 "token.rkt"
 		 "fetcher.rkt")
 
@@ -11,7 +13,7 @@
 (define/contract (api/email [token (auth-token-value)] [cache? #t])
   (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
   
-  (api/fetch "email" cache?))
+  (api/fetch "email" token #:cache? cache?))
 
 (struct email (adress)
 		#:transparent)
