@@ -8,12 +8,12 @@
 		 "etags.rkt"
 		 "cache.rkt")
 
-(provide api/fetch)
+(provide github/fetch)
 
-(define/contract (api/fetch request-url
-							#:token [token ""])
+(define/contract (github/fetch request-url
+							   #:token [token ""])
   ((url?) (#:token string?) . ->* . jsexpr?)
-  
+
   (define (request-header)
 	(define/contract (add-token header)
 	  ((or/c (listof string?)) . -> . (or/c (listof string?)))
