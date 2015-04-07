@@ -1,49 +1,85 @@
 #lang racket/base
 
 (require racket/contract
+		 racket/match
 		 json
 
-		 "token.rkt"
-		 "user.rkt"
+		 "urls.rkt"
 		 "fetcher.rkt")
 
-(provide api/events->events
+(provide github/events
+		 (struct-out actor)
+		 (struct-out event/repo)
 		 (struct-out event))
 
-(struct event (actor type repo-name repo-url)
+(struct actor (avatar-url
+				gravatar-id
+				id
+				login
+				url)
 		#:transparent)
 
-(define (get-public-events-url)
-  (format "~ausers/~a/events/public"
-		  github-base-url
-		  (user-login (api/user->user))))
+(struct event/repo (id
+					name
+					url)
+		#:transparent)
 
-(define/contract (api/events [token (auth-token-value)] [cache? #t])
-  (() (string? boolean?) . ->* . (or/c jsexpr? eof-object?))
+(struct event (created-at
+				id
+				payload
+				public
+				repo
+				type)
+		#:transparent)
 
-  (api/fetch "events"
-			 token
-			 #:cache? cache?
-			 #:url (get-public-events-url)))
 
-(define/contract (api/event->event json-data)
-  (jsexpr? . -> . event?)
+(define/contract (github/events login
+								#:token [token ""])
+  ((string?) (#:token string?) . ->* . (listof event?))
+
+  (define/contract (js-event->event js-event)
+	(jsexpr? . -> . event?)
+
+	(match js-event
+	  [(hash-table
+		 ('actor
+		  (hash-table
+			('avatar_url avatar-url)
+			('gravatar_id gravatar-id)
+			('id actor-id)
+			('login login)
+			('url actor-url)))
+		 ('created_at created-at)
+		 ('id id)
+		 ('payload payload)
+		 ('public public)
+		 ('repo
+		  (hash-table
+			('id repo-id)
+			('name name)
+			('url repo-url)))
+		 ('type type))
+	   (event
+		 (actor avatar-url
+				gravatar-id
+				actor-id
+				login
+				actor-url)
+		 id
+		 payload
+		 public
+		 (event/repo
+		   repo-id
+		   name
+		   repo-url)
+		 type)]))
+
+  (map js-event->event
+	   (github/fetch (compose-events-url login)
+					 #:token token))) 
+
+(module+ main
+  (require racket/pretty
+		   "token.rkt")
   
-  (define actor (hash-ref (hash-ref json-data 'actor)
-						  'login))
-
-  (define type (hash-ref json-data 'type))
-
-  (define repo-name (hash-ref (hash-ref json-data 'repo)
-							  'name))
-
-  (define repo-url (hash-ref (hash-ref json-data 'repo)
-							 'url))
-
-  (event actor type repo-name repo-url))
-
-(define/contract (api/events->events [json-data (api/events)]
-									 #:cache? [cache? #t])
-  (() ((listof jsexpr?) #:cache? boolean?) . ->* . (listof event?))
-  
-  (map api/event->event json-data))
+  (pretty-print (github/events "GoNZooo")))
