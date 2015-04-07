@@ -46,7 +46,7 @@
 							  #:token [token ""])
   ((string?) (#:token string?) . ->* . (or/c user? list? jsexpr?))
 
-  (match (api/fetch (compose-user-url login)
+  (match (github/fetch (compose-user-url login)
 					#:token token)
 	[(hash-table
 	   ('avatar_url avatar-url)
