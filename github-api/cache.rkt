@@ -31,7 +31,8 @@
 (define/contract (read-cache url)
   (url? . -> . jsexpr?)
   
-  (call-with-input-file (cache-name url)))
+  (call-with-input-file (cache-name url)
+						read))
 
 (define/contract (write-cache url data)
   (url? jsexpr? . -> . void?)
