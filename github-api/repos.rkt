@@ -288,4 +288,4 @@
   (require racket/pretty
 		   "token.rkt")
 
-  (pretty-print (length (github/repos "GoNZooo"))))
+  (pretty-print (map repo-owner (github/repos "GoNZooo"))))
