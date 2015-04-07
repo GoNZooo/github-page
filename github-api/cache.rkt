@@ -2,24 +2,41 @@
 
 (require racket/port
 		 racket/contract
+		 racket/string
+		 net/url
 		 json)
 
 (provide read-cache
-		 write-cache)
+		 write-cache
+		 cache-exists?
+		 cache-name)
 
-(define/contract (read-cache type)
-  (string? . -> . jsexpr?)
-  
-  (call-with-input-file (format "cache/~a.cache"
-								type)
-						read))
+(define/contract (cache-name url)
+  (url? . -> . string?)
 
-(define/contract (write-cache type data)
-  (string? jsexpr? . -> . void?)
+  (define (strip-url u)
+	(string-replace (string-replace (url->string u)
+									#px".*://"
+									"")
+					#rx"/" "_"))
   
-  (call-with-output-file (format "cache/~a.cache"
-								 type)
+  (format "cache/~a.cache"
+		  (strip-url url)))
+
+(define/contract (cache-exists? url)
+  (url? . -> . boolean?)
+
+  (file-exists? (cache-name url)))
+
+(define/contract (read-cache url)
+  (url? . -> . jsexpr?)
+  
+  (call-with-input-file (cache-name url)))
+
+(define/contract (write-cache url data)
+  (url? jsexpr? . -> . void?)
+  
+  (call-with-output-file (cache-name url)
 						 (lambda (out-port)
 						   (write data out-port))
 						 #:exists 'replace))
-
