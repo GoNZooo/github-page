@@ -27,7 +27,8 @@
 	(define/contract (add-etag header)
 	  ((or/c (listof string?)) . -> . (or/c (listof string?)))
 
-	  (if (etag-exists? request-url)
+	  (if (and (etag-exists? request-url)
+			   (cache-exists? request-url))
 		(cons (format "If-None-Match: ~a"
 					  (read-etag request-url))
 			  header)
