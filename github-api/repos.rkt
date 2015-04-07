@@ -9,7 +9,8 @@
 		 "fetcher.rkt")
 
 (provide github/repos
-		 (struct-out repo))
+		 (struct-out repo)
+		 (struct-out owner))
 
 (struct owner (avatar-url
 				events-url
@@ -101,7 +102,7 @@
 
 (define/contract (github/repos login
 							   #:token [token ""])
-  ((string?) (#:token string?) . ->* . (or/c (listof repo?) list? jsexpr?))
+  ((string?) (#:token string?) . ->* . (listof repo?))
 
   (define/contract (js-repo->repo js-repo)
 	(jsexpr? . -> . repo?)
