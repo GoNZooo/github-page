@@ -8,45 +8,52 @@
 		 "etags.rkt"
 		 "cache.rkt")
 
-(provide api/fetch
-		 github-base-url)
+(provide api/fetch)
 
-(define github-base-url "https://api.github.com/")
+(define/contract (api/fetch request-url
+							#:token [token ""])
+  ((url?) (#:token string?) . ->* . jsexpr?)
+  
+  (define (request-header)
+	(define/contract (add-token header)
+	  ((or/c (listof string?)) . -> . (or/c (listof string?)))
 
-(define/contract (api/fetch type
-							auth-token
-							#:cache? [cache? #t]
-							#:url [request-url ""])
-  ((string? string?) (#:cache? boolean? #:url string?) . ->* . jsexpr?)
+	  (if (not (equal? token ""))
+		(cons (format "Authorization: token ~a"
+					  token)
+			  header)
+		header))
 
+	(define/contract (add-etag header)
+	  ((or/c (listof string?)) . -> . (or/c (listof string?)))
 
+	  (if (etag-exists? request-url)
+		(cons (format "If-None-Match: ~a"
+					  (read-etag request-url))
+			  header)
+		header))
 
-  (define (api-url)
-	(if (not (equal? request-url ""))
-	  request-url
-	  (case type
-		[("user") (string-append github-base-url
-								 "user")]
-		[("repos") (string-append github-base-url
-								  "user/repos")]
-		[("email") (string-append github-base-url
-								  "user/emails")])))
+	(define (chain funcs obj)
+	  (if (null? funcs)
+		obj
+		(chain (cdr funcs)
+			   ((car funcs) obj))))
+
+	(chain `(,add-etag ,add-token) '()))
 
   (define-values (api-port header-string)
-	(get-pure-port/headers (string->url (api-url))
-						   (list (format "Authorization: token ~a"
-										 auth-token)
-								 (format "If-None-Match: ~a"
-										 (read-etag type)))))
+	(get-pure-port/headers request-url
+						   (request-header)))
 
   (define header (header-string->header-list header-string))
 
-  (if (and (not-modified? header) cache?)
-	(read-cache type)
+  (if (and (not-modified? header) (cache-exists? request-url))
+	(read-cache request-url)
+
 	(let ([js-data (read-json api-port)])
 	  (close-input-port api-port)
-	  (write-cache type js-data)
-	  (write-etag type (extract-etag header))
+	  (write-cache request-url js-data)
+	  (write-etag request-url (extract-etag header))
 	  js-data)))
 
 (define/contract (not-modified? headers)
