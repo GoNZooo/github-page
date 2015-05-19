@@ -9,6 +9,7 @@
          "fetcher.rkt")
 
 (provide github/repos
+         github/repos/enumerated
          (struct-out repo)
          (struct-out owner))
 
@@ -99,6 +100,17 @@
                watchers
                watchers-count)
         #:transparent)
+
+(define/contract (github/repos/enumerated login
+                                         #:token [token ""])
+  ((string?) (#:token string?) . ->* . (listof (cons/c real? repo?)))
+
+  (define repos (github/repos login
+                              #:token token))
+  (map (lambda (n r)
+         (cons n r))
+       (range (length repos))
+       repos))
 
 (define/contract (github/repos login
                                #:token [token ""])
