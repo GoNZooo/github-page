@@ -10,7 +10,6 @@
 
 (module+ main
   (require racket/pretty)
-  (api/user->user)
-  (api/email->email)
-  (pretty-print (api/repos->repos))
-  (pretty-print (api/events->events)))
+  (pretty-print (github/user "GoNZooo"))
+  (pretty-print (github/events "GoNZooo"))
+  (pretty-print (github/repos "GoNZooo")))
