@@ -8,7 +8,7 @@
 
          "github-api/interface.rkt")
 
-(define/page (main-page user-data repo-list email-data)
+(define/page (main-page user-data repo-list)
   (response/full
     200 #"Okay"
     (current-seconds) TEXT/HTML-MIME-TYPE
