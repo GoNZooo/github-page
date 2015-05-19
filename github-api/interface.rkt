@@ -5,8 +5,7 @@
          "user.rkt"
          "events.rkt")
 
-(provide (all-from-out "email.rkt"
-                       "repos.rkt"
+(provide (all-from-out "repos.rkt"
                        "user.rkt"
                        "events.rkt"))
 
