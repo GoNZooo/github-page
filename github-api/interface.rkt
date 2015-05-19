@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require "email.rkt"
-         "repos.rkt"
+(require "repos.rkt"
          "user.rkt"
          "events.rkt")
 
