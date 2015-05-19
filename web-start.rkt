@@ -17,9 +17,8 @@
 
 (define (request/github request)
   (main-page request
-             (api/user->user)
-             (api/repos->repos)
-             (api/email->email)))
+             (github/user "GoNZooo")
+             (github/repos/enumerated "GoNZooo")))
 
 (define/page (ping-page)
   (response/full
