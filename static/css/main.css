@@ -1,67 +1,67 @@
 body {
-	background-color: #ddd;
-	color: #262;
-	font-family: "Open Sans", sans-serif;
+    background-color: #ddd;
+    color: #262;
+    font-family: "Open Sans", sans-serif;
 }
 
 div#user-info {
-	margin-bottom: 1%;
-	font-weight: 400;
+    margin-bottom: 1%;
+    font-weight: 400;
 }
 
 #user-info div {
-	margin-left: 1%;
+    margin-left: 1%;
 }
 
 div#user-name {
-	font-size: 22px;
+    font-size: 22px;
 }
 
 span#mailto-link {
 }
 
 span#github-link {
-	margin-left: 1%;
+    margin-left: 1%;
 }
 
 div#repo-list {
-	margin-left: 1%;
-	padding-left: 10px;
-	font-weight: 600;
+    margin-left: 1%;
+    padding-left: 10px;
+    font-weight: 600;
 }
 
 table#repo-table {
-	border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 table, th, td {
-	border: 1px solid #111;
-	font-size: 14px;
+    border: 1px solid #111;
+    font-size: 14px;
 }
 
 tr.odd {
-	background-color: #eee;
+    background-color: #eee;
 }
 
 tr.even {
-	background-color: #fff;
+    background-color: #fff;
 }
 
 td.repo-name{
-	text-align: center;
+    text-align: center;
 }
 
 td.repo-description {
 }
 
 td.repo-language {
-	text-align: center;
+    text-align: center;
 }
 
 td {
-	padding: 6px 6px 6px 6px;
+    padding: 6px 6px 6px 6px;
 }
 
 a {
-	color: #339;
+    color: #339;
 }

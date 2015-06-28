@@ -102,7 +102,7 @@
         #:transparent)
 
 (define/contract (github/repos/enumerated login
-                                         #:token [token ""])
+                                          #:token [token ""])
   ((string?) (#:token string?) . ->* . (listof (cons/c real? repo?)))
 
   (define repos (github/repos login
