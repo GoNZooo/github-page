@@ -3,5 +3,5 @@ auth/*
 *~
 \#*\#
 *.session
-etags/*
-cache/*
+src/etags/*
+src/cache/*
