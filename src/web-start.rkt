@@ -30,10 +30,20 @@
 (define (request/ping request)
   (ping-page request))
 
+(define/page (ping-pong-page)
+  (response/full
+    200 #"Okay"
+    (current-seconds) TEXT/HTML-MIME-TYPE
+    '()
+    `(,(string->bytes/utf-8 "Klurigt!"))))
+
+(define (request/ping-pong request)
+  (ping-pong-page request))
+
 (define-values (github-page-dispatch github-page-url)
   (dispatch-rules
     [("ping") request/ping]
-    [("") request/github]))
+    [("github" "") request/github]))
 
 (serve/servlet github-page-dispatch
                #:port 8080
