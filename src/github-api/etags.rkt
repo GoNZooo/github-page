@@ -32,16 +32,15 @@
 (define/contract (read-etag url)
   (url? . -> . string?)
 
-  (call-with-input-file (etag-name url)
-                        port->string))
+  (call-with-input-file (etag-name url) port->string))
 
 (define/contract (write-etag url etag)
   (url? string? . -> . integer?)
 
   (call-with-output-file (etag-name url)
-                         (lambda (out-port)
-                           (write-string etag out-port))
-                         #:exists 'replace))
+    (lambda (out-port)
+      (write-string etag out-port))
+    #:exists 'replace))
 
 (define/contract (extract-etag headers)
   ((listof (listof string?)) . -> . string?)
