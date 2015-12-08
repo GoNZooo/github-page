@@ -31,13 +31,12 @@
 (define/contract (read-cache url)
   (url? . -> . jsexpr?)
 
-  (call-with-input-file (cache-name url)
-                        read))
+  (call-with-input-file (cache-name url) read))
 
 (define/contract (write-cache url data)
   (url? jsexpr? . -> . void?)
 
   (call-with-output-file (cache-name url)
-                         (lambda (out-port)
-                           (write data out-port))
-                         #:exists 'replace))
+    (lambda (out-port)
+      (write data out-port))
+    #:exists 'replace))
