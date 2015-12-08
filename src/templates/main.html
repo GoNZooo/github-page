@@ -30,17 +30,17 @@
                 @in[r repo-list]{
                 @(if (odd? (car r))
                 "<tr class=\"odd\">" "<tr class=\"even\">")
-                        <td class="repo-name">
-                            <a href="@|(repo-html-url (cdr r))|">@|(repo-name (cdr r))|</a>
-                        </td>
-                        <td class="repo-description">
-                            @|(repo-description (cdr r))|
-                        </td>
-                        <td class="repo-language">
-                            @|(repo-language (cdr r))|
-                        </td>
-                    </tr>
-                    }
+                    <td class="repo-name">
+                        <a href="@|(repo-html-url (cdr r))|">@|(repo-name (cdr r))|</a>
+                    </td>
+                    <td class="repo-description">
+                        @|(repo-description (cdr r))|
+                    </td>
+                    <td class="repo-language">
+                        @|(repo-language (cdr r))|
+                    </td>
+                </tr>
+                }
             </table>
         </div>
     </body>
